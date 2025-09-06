@@ -40,6 +40,7 @@
 .weekday {
     font-size: 3rem;
     font-weight: bold;
+    justify-self: center;
 }
 
 .task-section {
@@ -51,4 +52,5 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    border: solid slategray 2px;
 }

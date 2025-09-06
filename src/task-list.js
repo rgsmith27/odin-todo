@@ -1,3 +1,4 @@
+import "./project";
 import "./task-item";
 
 export default class taskList{
@@ -20,5 +21,13 @@ export default class taskList{
 
     removeTask(taskID){
         this.list = this.list.filter(item => item.id != taskID);
+    }
+
+    sortByPriority(){
+        this.list = this.list.sort( (a,b) => a.priority - b.priority);
+    }
+
+    sortByProject(){
+        this.list = this.list.sort( (a,b) => a.project.title - b.project.title);
     }
 }

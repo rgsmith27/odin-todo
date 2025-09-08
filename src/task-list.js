@@ -1,33 +1,34 @@
-import "./project";
-import "./task-item";
+import TaskItem from "./task-item";
 
-export default class taskList{
+class TaskList{
     constructor(date){
-        this.date = date;
-        this.list = [];
+        this._date = date;
+        this._list = [];
     }
 
     get date(){
-        return this.date;
+        return this._date;
     }
 
     get list(){
-        return this.list;
+        return this._list;
     }
 
     addTask(task){
-        this.list.push(task);
+        this._list.push(task);
     }
 
     removeTask(taskID){
-        this.list = this.list.filter(item => item.id != taskID);
+        this._list = this._list.filter(item => item.id != taskID);
     }
 
     sortByPriority(){
-        this.list = this.list.sort( (a,b) => a.priority - b.priority);
+        this._list = this._list.sort( (a,b) => a.priority - b.priority);
     }
 
     sortByProject(){
-        this.list = this.list.sort( (a,b) => a.project.title - b.project.title);
+        this._list = this._list.sort( (a,b) => a.project.title - b.project.title);
     }
 }
+
+export default TaskList;

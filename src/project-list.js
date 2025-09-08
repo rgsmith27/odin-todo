@@ -1,4 +1,4 @@
-import "./project";
+import Project from "./project";
 
 export default projectList = (function() {
     const list = [];

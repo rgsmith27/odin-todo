@@ -1,54 +1,58 @@
-export default class taskItem{
+import Project from "./project"
+
+class TaskItem{
     constructor(title, description, date, project, priority){
-        this.title = title;
-        this.description = description;
-        this.date = date;
-        this.project = project;
-        this.priority = priority;
-        this.id = crypto.randomUUID();
+        this._title = title;
+        this._description = description;
+        this._date = date;
+        this._project = project;
+        this._priority = priority;
+        this._id = crypto.randomUUID();
     }
 
     get title(){
-        return this.title;
+        return this._title;
     }
 
     set title(value){
-        this.title = value;
+        this._title = value;
     }
 
     get description(){
-        return this.description;
+        return this._description;
     }
 
     set description(value){
-        this.description = value;
+        this._description = value;
     }
 
     get date(){
-        return this.date;
+        return this._date;
     }
 
     set date(value){
-        this.date = value;
+        this._date = value;
     }
 
     get project(){
-        return this.project;
+        return this._project;
     }
 
     set project(value){
-        this.project = value;
+        this._project = value;
     }
 
     get priority(){
-        return this.priority;
+        return this._priority;
     }
     
     set priority(value){
-        this.priority = value;
+        this._priority = value;
     }
 
     get id(){
-        return this.id;
+        return this._id;
     }
 }
+
+export default TaskItem;

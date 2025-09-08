@@ -1,27 +1,29 @@
-export default class project{
+class Project{
     constructor(title, color){
-        this.title = title;
-        this.color = color;
-        this.id = crypto.randomUUID();
+        this._title = title;
+        this._color = color;
+        this._id = crypto.randomUUID();
     }
 
     get title(){
-        return this.title;
+        return this._title;
     }
     
     set title(value){
-        return this.title;
+        this._title = value;
     }
 
     get color(){
-        return this.color;
+        return this._color;
     }
 
     set color(value){
-        return this.value;
+        this._color = value;
     }
 
     get id(){
-        return this.id;
+        return this._id;
     }
 }
+
+export default Project;

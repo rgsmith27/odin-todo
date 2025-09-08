@@ -1,21 +1,24 @@
-import "./task-list";
+import TaskList from "./task-list";
 
-export default taskListList = (function() {
+const TaskListList = (function() {
     const weekdays = 5;
-    const taskListList = [weekdays];
+    const list = [weekdays];
 
     for(let i = 0; i < weekdays; i++){
-        taskListList[i] = new taskList(i);
+        const taskList = new TaskList(i);
+        list[i] = taskList;
     }
 
     const changeTaskDate = (taskID, initialDate, newDate) => {
-        const initalList = taskListList[initialDate];
-        const newList = taskListList[newDate];
+        const initalList = list[initialDate];
+        const newList = list[newDate];
         const task = initalList.find(item => item.id == taskID);
 
         initalList.filter(item => item.id != taskID);
         newList.push(task);
     };
 
-    return { taskListList, changeTaskDate };
+    return { weekdays, list, changeTaskDate };
 })();
+
+export default TaskListList;

@@ -1,4 +1,5 @@
 import TaskList from "./task-list";
+import TaskItem from "./task-item";
 
 const TaskListList = (function() {
     const weekdays = 5;
@@ -18,7 +19,19 @@ const TaskListList = (function() {
         newList.push(task);
     };
 
-    return { weekdays, list, changeTaskDate };
+    const addTask = (task) => {
+        const date = task.date;
+        const taskList = list[date];
+        taskList.list.push(task);
+    }
+
+    const removeTask = (taskID) => {
+        list.forEach( taskList => {
+            taskList.list = taskList.list.filter( task => task.id != taskID)
+        });
+    }
+
+    return { weekdays, list, changeTaskDate, addTask, removeTask };
 })();
 
 export default TaskListList;

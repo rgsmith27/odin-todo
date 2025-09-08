@@ -10,16 +10,12 @@ class TaskList{
         return this._date;
     }
 
+    set list(value){
+        this._list = value;
+    }
+
     get list(){
         return this._list;
-    }
-
-    addTask(task){
-        this._list.push(task);
-    }
-
-    removeTask(taskID){
-        this._list = this._list.filter(item => item.id != taskID);
     }
 
     sortByPriority(){

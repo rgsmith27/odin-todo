@@ -17,14 +17,6 @@ class TaskList{
     get list(){
         return this._list;
     }
-
-    sortByPriority(){
-        this._list = this._list.sort( (a,b) => a.priority - b.priority);
-    }
-
-    sortByProject(){
-        this._list = this._list.sort( (a,b) => a.project.title - b.project.title);
-    }
 }
 
 export default TaskList;

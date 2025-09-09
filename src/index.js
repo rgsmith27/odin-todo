@@ -235,6 +235,20 @@ const initializeButtons = () => {
         });
         container.append(taskForm);
     });
+
+    const projectSortButton = document.querySelector('.sort-projects-button');
+    
+    projectSortButton.addEventListener('click', () => {
+        TaskListList.sortByProject();
+        updateTasks();
+    });
+
+    const prioritySortButton = document.querySelector('.sort-priority-button');
+
+    prioritySortButton.addEventListener('click', () => {
+        TaskListList.sortByPriority();
+        updateTasks();
+    });
 }
 
 initializeButtons();

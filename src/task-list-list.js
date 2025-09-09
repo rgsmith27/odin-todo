@@ -31,7 +31,19 @@ const TaskListList = (function() {
         });
     }
 
-    return { weekdays, list, changeTaskDate, addTask, removeTask };
+    const sortByPriority = () => {
+        list.forEach( taskList => 
+            taskList.list = taskList.list.sort( (a,b) => a.priority - b.priority)
+        );
+    }
+
+    const sortByProject = () => {
+        list.forEach( taskList => {
+            taskList.list = taskList.list.sort( (a,b) => a.project.title - b.project.title);
+        })
+    }
+
+    return { weekdays, list, changeTaskDate, addTask, removeTask, sortByPriority, sortByProject};
 })();
 
 export default TaskListList;

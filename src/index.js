@@ -3,6 +3,23 @@ import TaskListList from './task-list-list';
 import TaskItem from './task-item';
 import Project from './project';
 
+const numberToWeekday = {
+    0: 'Monday',
+    1: 'Tuesday',
+    2: 'Wednesday',
+    3: 'Thursday',
+    4: 'Friday'
+
+}
+
+const weekdayToNumber = {
+    'Monday': 0,
+    'Tuesday': 1,
+    'Wednesday': 2,
+    'Thursday': 3,
+    'Friday': 4
+}
+
 const setAttributes = (element, attributes) => {
     for(const attribute in attributes){
         const value = attributes[attribute];
@@ -31,6 +48,21 @@ const createTaskElement = (task) => {
     taskBody.classList.add('task-body');
     taskBody.textContent = task.description; 
 
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Edit';
+    editButton.addEventListener('click', () => {
+        const container = document.querySelector('.container');
+        const editForm = createTaskFormElement(task);
+        container.append(editForm);
+
+        editForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(editForm);
+            editTask(formData, task);
+            editForm.remove();
+        })
+    });
+
     const removeButton = document.createElement('button');
     removeButton.textContent = "Delete";
     removeButton.addEventListener('click', () => {
@@ -38,7 +70,7 @@ const createTaskElement = (task) => {
         updateTasks();
     })
 
-    taskCard.append(taskPriority, taskTitle, taskProject, taskBody, removeButton);
+    taskCard.append(taskPriority, taskTitle, taskProject, taskBody, removeButton, editButton);
     
     return taskCard;
 }
@@ -66,13 +98,14 @@ const updateTasks = () => {
     }
 }
 
-const createTitleEntryElement = () => {
+const createTitleEntryElement = (title) => {
     const titleEntry = document.createElement('input');
-    setAttributes(titleEntry, {'type': 'text', 'id': 'title', 'name': 'title', 'placeholder': 'Title'});
+    setAttributes(titleEntry, {'type': 'text', 'id': 'title', 'name': 'title'});
+    titleEntry.value = title;
     return titleEntry;
 }
 
-const createDateEntryElement = () => {
+const createDateEntryElement = (date) => {
     const dateEntry = document.createElement('select');
     setAttributes(dateEntry, {'id': 'date', 'name': 'date'});
 
@@ -88,11 +121,12 @@ const createDateEntryElement = () => {
     friday.textContent = 'Friday';
 
     dateEntry.append(monday, tuesday, wednesday, thursday, friday);
+    dateEntry.value = date;
 
     return dateEntry;
 }
 
-const createPriorityEntryElement = () => {
+const createPriorityEntryElement = (priority) => {
     const priorityEntry = document.createElement('select');
     setAttributes(priorityEntry, {'id': 'priority', 'name': 'priority'});
     
@@ -108,41 +142,52 @@ const createPriorityEntryElement = () => {
     five.textContent = '5';
 
     priorityEntry.append(one, two, three, four, five);
+    priorityEntry.value = priority;
 
     return priorityEntry;
 }
 
-const createDescriptionEntryElement = () => {
+const createDescriptionEntryElement = (description) => {
     const descriptionEntry = document.createElement('textarea');
-    setAttributes(descriptionEntry, {'id': 'description', 'name': 'description', 'placeholder': 'Write a descriptive description'});
+    setAttributes(descriptionEntry, {'id': 'description', 'name': 'description'});
+    descriptionEntry.value = description;
     
     return descriptionEntry;
 }
 
-
-
 //need to add project selection after adding projects
-const createTaskFormElement = () => {
+const createTaskFormElement = (task)  => {
+    let title;
+    let date;
+    let priority;
+    let description;
+
+    if(!task){
+        title = 'Title';
+        date = 'Monday';
+        priority = '1';
+        description = 'Enter description here';
+    } 
+    else {
+        title = task.title;
+        date = numberToWeekday[task.date];
+        priority = `${task.priority}`;
+        description = task.description;
+    }
+
     const taskForm = document.createElement('form');
     taskForm.classList.add('task-create-form');
 
-    const titleEntry = createTitleEntryElement();
-    const dateEntry = createDateEntryElement();
-    const priorityEntry = createPriorityEntryElement();
-    const descriptionEntry = createDescriptionEntryElement();
+    const titleEntry = createTitleEntryElement(title);
+    const dateEntry = createDateEntryElement(date);
+    const priorityEntry = createPriorityEntryElement(priority);
+    const descriptionEntry = createDescriptionEntryElement(description);
     
     const submitButton = document.createElement('button');
     submitButton.setAttribute('type', 'submit');
-    submitButton.textContent = 'Create task';
+    submitButton.textContent = 'Submit task';
 
     taskForm.append(titleEntry, dateEntry, priorityEntry, descriptionEntry, submitButton);
-
-    taskForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const formData = new FormData(taskForm);
-        newTask(formData);
-        taskForm.remove();
-    });
 
     return taskForm;
 }
@@ -154,15 +199,7 @@ const newTask = (formData) => {
     const date = formData.get('date');
     //placeholder project until project selection is added to form
     const project = new Project('placeholder', '#ff0000ff')
-    const priority = formData.get('priority');
-
-    const weekdayToNumber = {
-        'Monday': 0,
-        'Tuesday': 1,
-        'Wednesday': 2,
-        'Thursday': 3,
-        'Friday': 4
-    }
+    const priority = Number(formData.get('priority'));
 
     const dateNumber = weekdayToNumber[date];
     const priorityNumber = Number(priority);
@@ -174,13 +211,30 @@ const newTask = (formData) => {
 
 }
 
+const editTask = (formData, task) => {
+    task.title = formData.get('title');
+    task.description = formData.get('description');
+    //no project selection yet
+    task.priority = Number(formData.get('priority'));
+    task.date = weekdayToNumber[formData.get('date')];
+    updateTasks();
+}
+
 const initializeButtons = () => {
     const addButton = document.querySelector('.add-button');
-    const taskForm = createTaskFormElement();
+
     addButton.addEventListener('click', (event) => {
         const container = document.querySelector('.container');
+        const taskForm = createTaskFormElement();
+
+        taskForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(taskForm);
+            newTask(formData);
+            taskForm.remove();
+        });
         container.append(taskForm);
-    })
+    });
 }
 
 initializeButtons();

@@ -100,3 +100,25 @@
     border: solid black 2px;
     border-radius: 4px;
 }
+
+.project-form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 30vw;
+    aspect-ratio: 4 / 3;
+    background-color: white;
+    border: solid black 2px;
+    border-radius: 4px;
+}
+
+.project-element {
+    background-color: lightgray;
+    border: solid black 1px;
+    border-radius: 2px;
+}
+
+.project-container {
+    display: grid;
+}

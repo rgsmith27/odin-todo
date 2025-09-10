@@ -2,6 +2,7 @@ import './styles.css';
 import TaskListList from './task-list-list';
 import TaskItem from './task-item';
 import Project from './project';
+import ProjectList from './project-list';
 
 const numberToWeekday = {
     0: 'Monday',
@@ -126,6 +127,27 @@ const createDateEntryElement = (date) => {
     return dateEntry;
 }
 
+const createProjectEntryElement = (project) => {
+    const projectEntry = document.createElement('select');
+    setAttributes(projectEntry, {'id': 'project', 'name': 'project'});
+
+    const projectList = ProjectList.getList();
+
+    projectList.forEach( project => {
+        const projectOption = document.createElement('option');
+        projectOption.textContent = project.title;
+        projectOption.style.color = project.color;
+        projectOption.value = `${project.id}`;
+        projectEntry.append(projectOption);
+    });
+    
+    if(project){
+        projectEntry.value = project.id;
+    }
+
+    return projectEntry;
+}
+
 const createPriorityEntryElement = (priority) => {
     const priorityEntry = document.createElement('select');
     setAttributes(priorityEntry, {'id': 'priority', 'name': 'priority'});
@@ -159,6 +181,7 @@ const createDescriptionEntryElement = (description) => {
 const createTaskFormElement = (task)  => {
     let title;
     let date;
+    let project;
     let priority;
     let description;
 
@@ -166,12 +189,14 @@ const createTaskFormElement = (task)  => {
         title = 'Title';
         date = 'Monday';
         priority = '1';
+        project = null;
         description = 'Enter description here';
     } 
     else {
         title = task.title;
         date = numberToWeekday[task.date];
         priority = `${task.priority}`;
+        project = task.project;
         description = task.description;
     }
 
@@ -180,25 +205,34 @@ const createTaskFormElement = (task)  => {
 
     const titleEntry = createTitleEntryElement(title);
     const dateEntry = createDateEntryElement(date);
+    const projectEntry = createProjectEntryElement(project);
     const priorityEntry = createPriorityEntryElement(priority);
     const descriptionEntry = createDescriptionEntryElement(description);
     
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'X';
+    closeButton.addEventListener('click', () => {
+        taskForm.remove();
+    });
+
     const submitButton = document.createElement('button');
     submitButton.setAttribute('type', 'submit');
     submitButton.textContent = 'Submit task';
 
-    taskForm.append(titleEntry, dateEntry, priorityEntry, descriptionEntry, submitButton);
+    taskForm.append(titleEntry, dateEntry, projectEntry, priorityEntry, descriptionEntry, submitButton, closeButton);
 
     return taskForm;
 }
 
 const newTask = (formData) => {
-
     const title = formData.get('title');
     const description = formData.get('description');
     const date = formData.get('date');
-    //placeholder project until project selection is added to form
-    const project = new Project('placeholder', '#ff0000ff')
+    const projectID = formData.get('project');
+    const projectList = ProjectList.getList();
+    const project = projectList.find(item => {
+        return item.id == projectID;
+    });
     const priority = Number(formData.get('priority'));
 
     const dateNumber = weekdayToNumber[date];
@@ -214,16 +248,109 @@ const newTask = (formData) => {
 const editTask = (formData, task) => {
     task.title = formData.get('title');
     task.description = formData.get('description');
-    //no project selection yet
+    const projectID = formData.get('project');
+    task.project = ProjectList.getList().find(item => {return item.id == projectID});
     task.priority = Number(formData.get('priority'));
-    task.date = weekdayToNumber[formData.get('date')];
+    const initialDate = task.date;
+    const newDate = weekdayToNumber[formData.get('date')];
+    task.date = newDate;
+    TaskListList.changeTaskDate(task.id, initialDate, newDate);
     updateTasks();
+}
+
+const removeAllProjectElements = (projectContainer) => {
+    while (projectContainer.firstChild){
+        projectContainer.removeChild(projectContainer.firstChild);
+    }
+}
+
+const newProject = (formData) => {
+    const title = formData.get('title');
+    const color = formData.get('color');
+
+    const project = new Project(title, color);
+    ProjectList.addProject(project);
+    updateProjects();
+} 
+
+const createProjectElement = (project) => {
+        const projectElement = document.createElement('div');
+        projectElement.classList.add('project-element');
+        
+        const projectTitleElement = document.createElement('div');
+        projectTitleElement.textContent = project.title;
+        projectTitleElement.style.color = project.color;
+
+        const projectRemoveElement = document.createElement('button');
+        projectRemoveElement.textContent = 'X';
+        projectRemoveElement.addEventListener('click', () => {
+            ProjectList.removeProject(project.id);
+            updateProjects();
+        });
+
+        projectElement.append(projectTitleElement, projectRemoveElement);
+        return projectElement;
+}
+
+const updateProjects = () => {
+    const projectContainer = document.querySelector('.project-container');
+    
+    if (!projectContainer) {
+        return;
+    }
+
+    removeAllProjectElements(projectContainer);
+
+    ProjectList.getList().forEach( (project) => {
+        const projectElement = createProjectElement(project);
+        projectContainer.append(projectElement);
+    });
+}
+
+const addProjectEntryElements = () => {
+    const projectForm = document.querySelector('.project-form');
+    const titleEntry = document.createElement('input');
+    setAttributes(titleEntry, {'type': 'text', 'id': 'title', 'name': 'title'});
+    titleEntry.value = 'title';
+
+    const colorEntry = document.createElement('input');
+    setAttributes(colorEntry, {'type': 'color', 'id': 'color', 'name': 'color'});
+
+    const submitButton = document.createElement('button');
+    submitButton.setAttribute('type', 'submit');
+    submitButton.textContent = 'Submit Project';
+
+    projectForm.append(titleEntry, colorEntry, submitButton);
+
+    projectForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(projectForm);
+        newProject(formData);
+    })
+}
+
+const createProjectFormElement = () => {
+    const projectForm = document.createElement('form');
+    projectForm.classList.add('project-form');
+    
+    const projectContainer = document.createElement('div');
+    projectContainer.classList.add('project-container');
+
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'X';
+    closeButton.addEventListener('click', () => {
+        projectForm.remove();
+    });
+
+    projectForm.append(projectContainer, closeButton);
+
+    return projectForm;
 }
 
 const initializeButtons = () => {
     const addButton = document.querySelector('.add-button');
 
-    addButton.addEventListener('click', (event) => {
+    addButton.addEventListener('click', () => {
         const container = document.querySelector('.container');
         const taskForm = createTaskFormElement();
 
@@ -249,6 +376,16 @@ const initializeButtons = () => {
         TaskListList.sortByPriority();
         updateTasks();
     });
+
+    const projectsButton = document.querySelector('.projects-button');
+
+    projectsButton.addEventListener('click', () => {
+        const container = document.querySelector('.container');
+        const projectFormElement = createProjectFormElement();
+        container.append(projectFormElement);
+        addProjectEntryElements();
+        updateProjects();
+    })
 }
 
 initializeButtons();

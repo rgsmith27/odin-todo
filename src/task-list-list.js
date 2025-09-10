@@ -11,11 +11,11 @@ const TaskListList = (function() {
     }
 
     const changeTaskDate = (taskID, initialDate, newDate) => {
-        const initalList = list[initialDate];
-        const newList = list[newDate];
+        const initalList = list[initialDate].list;
+        const newList = list[newDate].list;
         const task = initalList.find(item => item.id == taskID);
 
-        initalList.filter(item => item.id != taskID);
+        list[initialDate].list = initalList.filter(item => item.id != taskID);
         newList.push(task);
     };
 
@@ -39,7 +39,7 @@ const TaskListList = (function() {
 
     const sortByProject = () => {
         list.forEach( taskList => {
-            taskList.list = taskList.list.sort( (a,b) => a.project.title - b.project.title);
+            taskList.list = taskList.list.sort( (a,b) => a.project.title.toLowerCase().localeCompare(b.project.title.toLowerCase()));
         })
     }
 

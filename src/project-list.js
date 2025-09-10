@@ -1,11 +1,19 @@
 import Project from "./project";
 
-export default projectList = (function() {
-    const list = [];
+const ProjectList = (function() {
+    let list = [];
 
-    const addProject = (item) => list.push(item);
+    const addProject = (project) => {
+        list.push(project);
+    }
 
-    const removeProject = (projectID) => list = list.filter(item => item.id != projectID);
+    const removeProject = (projectID) => {
+        list = list.filter(item => item.id != projectID);
+    };
 
-    return{ list, addProject, removeProject};
+    const getList = () => list;
+
+    return{ getList, removeProject, addProject};
 })();
+
+export default ProjectList;

@@ -1,0 +1,1 @@
+Left this project in a WIP state. Adding local storage and proper styling would require a significant refactor, so I figure it is more worth my time to achieve basic functionality and move on for now.
